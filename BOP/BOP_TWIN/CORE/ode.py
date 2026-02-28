@@ -1,22 +1,15 @@
-# bop_twin/core/ode.py
 from __future__ import annotations
 
-from dataclasses import dataclass
 from typing import Callable, Dict, Any, Optional, Sequence, Union
-
 import numpy as np
 
 try:
     from scipy.integrate import solve_ivp
 except ImportError as e:
-    raise ImportError(
-        "scipy não está instalado. Instale com: pip install scipy"
-    ) from e
-
+    raise ImportError("Instale scipy: pip install scipy") from e
 
 ArrayLike = Union[Sequence[float], np.ndarray]
 OdeFun = Callable[[float, np.ndarray], ArrayLike]
-
 
 def integrate_ode(
     fun: OdeFun,
@@ -28,22 +21,17 @@ def integrate_ode(
     atol: float = 1e-9,
     verbose: bool = False,
 ) -> Dict[str, Any]:
-    """
-    Wrapper simples do solve_ivp retornando dict compatível com seus testes.
-
-    Retorna:
-      {
-        "t": np.ndarray shape (N,),
-        "y": np.ndarray shape (n_states, N),
-        "success": bool,
-        "message": str
-      }
-    """
     y0 = np.asarray(y0, dtype=float)
 
     if t_eval is None:
-        # default: 1000 pontos uniformes
         t_eval = np.linspace(t_span[0], t_span[1], 1000)
+    else:
+        t_eval = np.asarray(t_eval, dtype=float)
+        # garante que t_eval está dentro de t_span (evita ValueError)
+        t0, tf = float(t_span[0]), float(t_span[1])
+        t_eval = t_eval[(t_eval >= t0 - 1e-12) & (t_eval <= tf + 1e-12)]
+        # ordena e remove duplicatas (por segurança)
+        t_eval = np.unique(t_eval)
 
     def _fun(t, y):
         dy = fun(t, y)
@@ -51,9 +39,9 @@ def integrate_ode(
 
     sol = solve_ivp(
         fun=_fun,
-        t_span=t_span,
+        t_span=(float(t_span[0]), float(t_span[1])),
         y0=y0,
-        t_eval=np.asarray(t_eval, dtype=float),
+        t_eval=t_eval,
         method=method,
         rtol=rtol,
         atol=atol,
@@ -62,13 +50,7 @@ def integrate_ode(
     if verbose:
         print(f"[integrate_ode] success={sol.success} message={sol.message}")
 
-    return {
-        "t": sol.t,
-        "y": sol.y,
-        "success": bool(sol.success),
-        "message": str(sol.message),
-    }
-
+    return {"t": sol.t, "y": sol.y, "success": bool(sol.success), "message": str(sol.message)}
 
 def run_hold_test(
     fun: OdeFun,
@@ -78,26 +60,10 @@ def run_hold_test(
     pass_drop_percent: float = 1.0,
     method: str = "RK45",
 ) -> Dict[str, Any]:
-    """
-    Executa um hold test:
-      - inicia em p0_pa
-      - simula por t_hold_min
-      - calcula ΔP% = (P0 - P_end)/P0 * 100
-      - PASS se ΔP% <= pass_drop_percent
-
-    Assumimos que a variável de pressão principal é y[0].
-    """
     t_end = float(t_hold_min) * 60.0
-    t_eval = np.arange(0.0, t_end + dt_s, dt_s)
+    t_eval = np.arange(0.0, t_end + 1e-12, float(dt_s))
 
-    sol = integrate_ode(
-        fun=fun,
-        y0=[float(p0_pa)],
-        t_span=(0.0, t_end),
-        t_eval=t_eval,
-        method=method,
-        verbose=False,
-    )
+    sol = integrate_ode(fun=fun, y0=[float(p0_pa)], t_span=(0.0, t_end), t_eval=t_eval, method=method)
 
     p_end = float(sol["y"][0, -1])
     delta_p_percent = (float(p0_pa) - p_end) / float(p0_pa) * 100.0

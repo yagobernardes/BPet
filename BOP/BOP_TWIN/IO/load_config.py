@@ -1,117 +1,99 @@
 from __future__ import annotations
+
 import json
+import math
 from pathlib import Path
 from typing import Any, Dict, Union
 
+from bop_twin.core.units import psi_to_pa, gal_to_m3, liter_to_m3, inch_to_m
 
 class ConfigError(ValueError):
-    """Erro relacionado à configuração do BOP (JSON inválido ou incompleto)."""
     pass
 
 def _read_json(path: Union[str, Path]) -> Dict[str, Any]:
-    path = Path(path)
-    if not path.exists():
-        raise ConfigError(f"Arquivo não encontrado: {path}")
-    if path.suffix.lower() != ".json":
-        raise ConfigError(f"O arquivo deve ser .json. Recebido: {path.name}")
+    p = Path(path)
+    if not p.exists():
+        raise ConfigError(f"Arquivo não encontrado: {p}")
     try:
-        with open(path, "r", encoding="utf-8") as f:
-            data = json.load(f)
+        data = json.loads(p.read_text(encoding="utf-8"))
     except json.JSONDecodeError as e:
-        raise ConfigError(f"Erro ao decodificar JSON: {e}")
+        raise ConfigError(f"JSON inválido em {p}: {e}") from e
     if not isinstance(data, dict):
-        raise ConfigError("O JSON deve conter um objeto no nível raiz.")
+        raise ConfigError("Topo do JSON deve ser um objeto.")
     return data
 
+def _get(cfg: Dict[str, Any], key: str) -> Any:
+    if key not in cfg:
+        raise ConfigError(f"Campo obrigatório ausente: {key}")
+    return cfg[key]
 
-def _require_field(cfg: Dict[str, Any], path: str):
-    """Verifica se o campo existe (ex: 'fluid.rho')."""
-    current = cfg
-    for key in path.split("."):
-        if key not in current:
-            raise ConfigError(f"Campo obrigatório ausente: {path}")
-        current = current[key]
-    return current
+def _ensure_minimum(cfg: Dict[str, Any]) -> None:
+    _get(cfg, "meta")
+    _get(cfg["meta"], "name")
 
+    _get(cfg, "fluid")
+    _get(cfg["fluid"], "rho")
+    _get(cfg["fluid"], "bulk_modulus")
 
-def _ensure_positive(value: float, field: str):
-    if value <= 0:
-        raise ConfigError(f"O campo '{field}' deve ser maior que zero.")
+    _get(cfg, "accumulators")
+    if not isinstance(cfg["accumulators"], dict) or len(cfg["accumulators"]) == 0:
+        raise ConfigError("'accumulators' deve ser dict com pelo menos 1 item.")
 
+    _get(cfg, "valves")
+    if not isinstance(cfg["valves"], dict) or len(cfg["valves"]) == 0:
+        raise ConfigError("'valves' deve ser dict com pelo menos 1 item.")
 
-def _validate_minimum_structure(cfg: Dict[str, Any]) -> None:
+    _get(cfg, "actuators")
+    if not isinstance(cfg["actuators"], dict) or len(cfg["actuators"]) == 0:
+        raise ConfigError("'actuators' deve ser dict com pelo menos 1 item.")
 
-    # Meta
-    _require_field(cfg, "meta.name")
+def load_config(path: Union[str, Path], *, convert_to_SI: bool = False) -> Dict[str, Any]:
+    cfg = _read_json(path)
+    _ensure_minimum(cfg)
 
-    # Fluido
-    rho = _require_field(cfg, "fluid.rho")
-    bulk = _require_field(cfg, "fluid.bulk_modulus")
-
-    _ensure_positive(float(rho), "fluid.rho")
-    _ensure_positive(float(bulk), "fluid.bulk_modulus")
-
-    # Acumulador
-    accum = _require_field(cfg, "accumulators")
-    if not isinstance(accum, dict) or len(accum) == 0:
-        raise ConfigError("É necessário pelo menos 1 acumulador.")
-
-    # Válvula
-    valves = _require_field(cfg, "valves")
-    if not isinstance(valves, dict) or len(valves) == 0:
-        raise ConfigError("É necessário pelo menos 1 válvula.")
-
-    # Atuador
-    actuators = _require_field(cfg, "actuators")
-    if not isinstance(actuators, dict) or len(actuators) == 0:
-        raise ConfigError("É necessário pelo menos 1 atuador.")
-
-
-def _normalize_numbers(cfg: Dict[str, Any]) -> None:
-    """Converte valores numéricos para float quando necessário."""
-
+    # Normaliza números básicos
     cfg["fluid"]["rho"] = float(cfg["fluid"]["rho"])
     cfg["fluid"]["bulk_modulus"] = float(cfg["fluid"]["bulk_modulus"])
 
-    for name, acc in cfg.get("accumulators", {}).items():
-        if "gas_precharge_psi" in acc and acc["gas_precharge_psi"] is not None:
-            acc["gas_precharge_psi"] = float(acc["gas_precharge_psi"])
-
-        if "gas_volume_l" in acc and acc["gas_volume_l"] is not None:
-            acc["gas_volume_l"] = float(acc["gas_volume_l"])
-
-        if "fluid_volume_l" in acc and acc["fluid_volume_l"] is not None:
-            acc["fluid_volume_l"] = float(acc["fluid_volume_l"])
-
-        acc.setdefault("polytropic_n", 1.2)
-
-    for name, valve in cfg.get("valves", {}).items():
-        if "cd" in valve and valve["cd"] is not None:
-            valve["cd"] = float(valve["cd"])
-        if "area_m2" in valve and valve["area_m2"] is not None:
-            valve["area_m2"] = float(valve["area_m2"])
-        valve.setdefault("tau_open_s", 0.15)
-
-    for name, act in cfg.get("actuators", {}).items():
-        for key in ["piston_area_m2", "stroke_m", "mass_kg",
-                    "friction_coulomb_n", "friction_viscous_n_per_ms"]:
-            if key in act and act[key] is not None:
-                act[key] = float(act[key])
-
-        act.setdefault("friction_coulomb_n", 0.0)
-        act.setdefault("friction_viscous_n_per_ms", 0.0)
-
-
-def load_config(path: Union[str, Path], convert_to_SI: bool = False) -> Dict[str, Any]:
-    cfg = _read_json(path)
-    _validate_minimum_structure(cfg)
-    _normalize_numbers(cfg)
-
     if convert_to_SI:
-        from bop_twin.core.units import psi_to_pa, liter_to_m3
-        for acc in cfg.get("accumulators", {}).values():
+        # Exemplo: se quiser duplicar para SI sem perder originais:
+        cfg["fluid"]["bulk_modulus_pa"] = cfg["fluid"]["bulk_modulus"]  # já está em Pa no seu json
+        cfg["fluid"]["rho_kg_m3"] = cfg["fluid"]["rho"]
+
+        # Converte RAMS se existirem
+        rams = cfg.get("rams", {})
+        if isinstance(rams, dict):
+            def convert_ram(ram: dict):
+                if ram.get("main_piston_diameter_in") is not None:
+                    ram["main_piston_diameter_m"] = inch_to_m(float(ram["main_piston_diameter_in"]))
+                if ram.get("rod_diameter_in") is not None:
+                    ram["rod_diameter_m"] = inch_to_m(float(ram["rod_diameter_in"]))
+                if ram.get("closing_volume_gal") is not None:
+                    ram["closing_volume_m3"] = gal_to_m3(float(ram["closing_volume_gal"]))
+                if ram.get("actuation_pressure_psi") is not None:
+                    ram["actuation_pressure_pa"] = psi_to_pa(float(ram["actuation_pressure_psi"]))
+                if ram.get("high_pressure_psi") is not None:
+                    ram["high_pressure_pa"] = psi_to_pa(float(ram["high_pressure_psi"]))
+                if ram.get("main_piston_diameter_m") is not None:
+                    d = ram["main_piston_diameter_m"]
+                    ram["main_piston_area_m2"] = math.pi * d * d / 4.0
+
+            for k, ram in rams.items():
+                if isinstance(ram, dict):
+                    convert_ram(ram)
+            pipe_rams = rams.get("pipe_rams")
+            if isinstance(pipe_rams, dict):
+                for _, pr in pipe_rams.items():
+                    if isinstance(pr, dict):
+                        convert_ram(pr)
+
+        # Converte acumuladores/atuadores se você preencher esses campos no JSON
+        for _, acc in cfg.get("accumulators", {}).items():
             if acc.get("gas_precharge_psi") is not None:
-                acc["gas_precharge_pa"] = psi_to_pa(acc["gas_precharge_psi"])
+                acc["gas_precharge_pa"] = psi_to_pa(float(acc["gas_precharge_psi"]))
             if acc.get("gas_volume_l") is not None:
-                acc["gas_volume_m3"] = liter_to_m3(acc["gas_volume_l"])
+                acc["gas_volume_m3"] = liter_to_m3(float(acc["gas_volume_l"]))
+            if acc.get("fluid_volume_l") is not None:
+                acc["fluid_volume_m3"] = liter_to_m3(float(acc["fluid_volume_l"]))
+
     return cfg
