@@ -96,10 +96,48 @@
   },
 
   "fluid": {
-  "rho": 870.0,
-  "bulk_modulus": 1600000000.0,
-  "temperature_c": 25.0
-},
+    "rho": 1066.0,
+    "bulk_modulus": 1600000000.0,
+    "temperature_c": 25.0
+  },
+
+  "hydraulics": {
+    "hp_supply_pressure_psi": 3500,
+    "lp_supply_pressure_psi": 1500,
+    "return_pressure_psi": 14.7,
+    "V_acc_eff_m3": 0.02
+  },
+
+  "accumulators": {
+    "surface_bank": {
+      "gas_precharge_psi": 3000.0,
+      "gas_volume_l": 200.0,
+      "fluid_volume_l": 200.0,
+      "polytropic_n": 1.2,
+      "notes": "Valores iniciais para MVP; calibrar usando ensaios (ex.: 4750→3450 psi)."
+    }
+  },
+
+  "valves": {
+    "directional_main": {
+      "type": "orifice",
+      "cd": 0.62,
+      "area_m2": 1.0e-4,
+      "tau_open_s": 0.15,
+      "notes": "Orificio equivalente do caminho POD→atuador (MVP). Ajustar por tempo/pressao do ensaio."
+    }
+  },
+
+  "actuators": {
+    "blind_shear_ram_actuator": {
+      "piston_area_m2": null,
+      "stroke_m": null,
+      "mass_kg": null,
+      "friction_coulomb_n": 0.0,
+      "friction_viscous_n_per_ms": 0.0,
+      "notes": "Preencher piston_area a partir do diametro 22 in (rams.*.main_piston_diameter_in). stroke/massa podem ser calibrados."
+    }
+  },
 
   "preventers": {
     "annular_upper": {
@@ -287,36 +325,6 @@
       }
     ]
   },
-
-"accumulators": {
-  "surface_bank": {
-    "gas_precharge_psi": 3000.0,
-    "gas_volume_l": 200.0,
-    "fluid_volume_l": 200.0,
-    "polytropic_n": 1.2,
-    "notes": "Valores iniciais para MVP; calibrar usando ensaios (ex.: 4750→3450 psi)."
-  }
-},
-"valves": {
-  "directional_main": {
-    "type": "orifice",
-    "cd": 0.62,
-    "area_m2": 1.0e-4,
-    "tau_open_s": 0.15,
-    "notes": "Orificio equivalente do caminho POD→atuador (MVP). Ajustar por tempo/pressao do ensaio."
-  }
-},
-"actuators": {
-  "blind_shear_ram_actuator": {
-    "piston_area_m2": null,
-    "stroke_m": null,
-    "mass_kg": null,
-    "friction_coulomb_n": 0.0,
-    "friction_viscous_n_per_ms": 0.0,
-    "notes": "Preencher piston_area a partir do diametro 22 in (rams.*.main_piston_diameter_in). stroke/massa podem ser calibrados."
-  }
-},
-
 
   "hydraulic_control_model_targets": {
     "intended_minimum_circuit": [
