@@ -98,14 +98,22 @@
   "fluid": {
     "rho": 1066.0,
     "bulk_modulus": 1600000000.0,
-    "temperature_c": 25.0
+    "temperature_c": 25.0,
+    "gas_volume_fraction": 0.0,
+    "yield_stress_pa": 0.0
   },
 
   "hydraulics": {
     "hp_supply_pressure_psi": 3500,
     "lp_supply_pressure_psi": 1500,
     "return_pressure_psi": 14.7,
-    "V_acc_eff_m3": 0.02
+    "V_acc_eff_m3": 0.02,
+    "V_act_m3": 0.005,
+    "V_acc_line_m3": 0.0,
+    "V_act_line_m3": 0.0,
+    "acc_structure_compliance_m3_per_pa": 0.0,
+    "act_structure_compliance_m3_per_pa": 0.0,
+    "line_resistance_pa_s_per_m3": 0.0
   },
 
   "accumulators": {
@@ -123,6 +131,14 @@
       "type": "orifice",
       "cd": 0.62,
       "area_m2": 1.0e-4,
+      "min_delta_p_pa": 0.0,
+      "hydraulic_diameter_m": 0.01,
+      "equivalent_length_m": 1.0,
+      "transmission_gain": 1.0,
+      "inertia_dissipation_ratio": 1.0,
+      "attenuation_alpha": 0.0,
+      "allow_reverse_flow": true,
+      "reverse_flow_gain": 1.0,
       "tau_open_s": 0.15,
       "notes": "Orificio equivalente do caminho POD→atuador (MVP). Ajustar por tempo/pressao do ensaio."
     }
