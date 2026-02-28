@@ -1,0 +1,355 @@
+{
+  "meta": {
+    "id": "ns47_west_tellus_nov_shaffer_nxt",
+    "name": "NS-47 West Tellus",
+    "contractor": "Seadrill",
+    "manufacturer": "NOV/Shaffer",
+    "model": "NXT",
+    "unit_type": "DP",
+    "bop_class_pressure_psi": 15000,
+    "bop_bore_in": 18.75,
+    "water_depth_contract_m": 3000,
+    "water_depth_design_max_m": 3658,
+    "stack_and_lmrp_staleiramento": "Juntos_ou_Separados"
+  },
+
+  "stack_overview": {
+    "lmpr": {
+      "weight_air_lb": 410200,
+      "weight_water_lb": 359353
+    },
+    "stack": {
+      "weight_air_lb": 478825,
+      "weight_water_lb": 414469
+    },
+    "connector": {
+      "manufacturer": "GE/VETCO",
+      "model": "ExF HAR",
+      "class_pressure_psi": 15000,
+      "bore_in": 18.75,
+      "profile": "H-4",
+      "rings_compatible": ["VT", "VX"],
+      "gasket_release": "Independente",
+      "position": "LMRP",
+      "ring_support": "Hidraulico"
+    },
+    "flex_joint": {
+      "manufacturer": "Oil States",
+      "model": "6.0 ksi",
+      "part_number": "PD14385 VER. C",
+      "class_pressure_psi": 6000,
+      "bore_in": 18.75,
+      "max_angle_deg": 10
+    },
+    "flex_loop": {
+      "class_pressure_psi": 15000
+    }
+  },
+
+  "lines_and_valves": {
+    "junta_de_riser": {
+      "manufacturer": "NOV",
+      "model": "FT-H",
+      "ck_line_id_in": 4.5,
+      "connection_type": "Flange",
+      "length_ft": 90,
+      "handsfree_gooseneck": false,
+      "structural_collapse_psi": 3040,
+      "external_pressure_main_tube_seal_psi": 4000
+    },
+
+    "booster_line_valve": {
+      "manufacturer": "NOV/Shaffer",
+      "model": "HB",
+      "class_pressure_psi": 15000,
+      "diameter_in": 3.0,
+      "fail_safe": "Open"
+    },
+
+    "bleed_valve_choke_line": {
+      "manufacturer": "NOV/Shaffer",
+      "model": "HB DUAL BLOCK",
+      "class_pressure_psi": 15000,
+      "diameter_in": 3.0625,
+      "line": "Choke",
+      "fail_safe": "Close"
+    },
+
+    "kill_choke_valves": [
+      {
+        "manufacturer": "NOV/Shaffer",
+        "model": "HB",
+        "class_pressure_psi": 15000,
+        "diameter_in": 3.0625,
+        "line": "Choke",
+        "fail_safe": "Close"
+      },
+      {
+        "manufacturer": "NOV/Shaffer",
+        "model": "HB",
+        "class_pressure_psi": 15000,
+        "diameter_in": 3.0625,
+        "line": "Kill",
+        "fail_safe": "Close"
+      }
+    ]
+  },
+
+  "fluid": {
+  "rho": 870.0,
+  "bulk_modulus": 1600000000.0,
+  "temperature_c": 25.0
+},
+
+  "preventers": {
+    "annular_upper": {
+      "manufacturer": "NOV/Shaffer",
+      "model": "Shaffer Spherical Wedge Cover",
+      "bore_in": 18.75,
+      "thickness_in": 27.33,
+      "class_pressure_psi": 10000,
+      "min_actuation_pressure_psi": 1250,
+      "notes": [
+        "Pressao de trabalho do anular varia com o diametro do tubo (ver doc de pressao de fechamento do anular).",
+        "Vedacao positiva contra flatpack."
+      ]
+    },
+    "annular_lower": {
+      "manufacturer": "NOV/Shaffer",
+      "model": "Shaffer Spherical Wedge Cover",
+      "bore_in": 18.75,
+      "thickness_in": 27.33,
+      "class_pressure_psi": 10000,
+      "min_actuation_pressure_psi": 1250,
+      "notes": [
+        "Pressao de trabalho do anular varia com o diametro do tubo (ver doc de pressao de fechamento do anular).",
+        "Vedacao positiva contra flatpack."
+      ]
+    }
+  },
+
+  "rams": {
+    "blind_shear_ram_generic": {
+      "type": "BSR",
+      "manufacturer": "NOV/Shaffer",
+      "bop_model": "NXT",
+      "bore_in": 18.75,
+      "class_pressure_psi": 15000,
+      "shear_model": "LFS-5",
+      "main_piston_diameter_in": 22.0,
+      "rod_diameter_in": 6.0,
+      "closing_ratio": 6.46,
+      "shearing_ratio": 13.44,
+      "high_pressure_psi": 5000,
+      "actuation_pressure_psi": 1500,
+      "closing_volume_gal": 45.0,
+      "locking_system": "PosLock with ILF",
+      "residual_pressure_update_date": "2023-01-03",
+      "residual_pressure_1st_close_psi": 3900,
+      "residual_pressure_2nd_close_1st_csr_psi": 3460,
+      "residual_pressure_2nd_close_1st_lbsr_psi": 3460,
+      "notes": [
+        "Fabric garante corte e vedacao para cabo de perfilagem/arame (ver observacao específica quando aplicável)."
+      ]
+    },
+
+    "casing_shear_ram_CSR": {
+      "type": "CSR",
+      "manufacturer": "NOV/Shaffer",
+      "bop_model": "NXT",
+      "bore_in": 18.75,
+      "class_pressure_psi": 15000,
+      "shear_model": "LFCS-5",
+      "main_piston_diameter_in": 22.0,
+      "rod_diameter_in": 6.0,
+      "closing_ratio": 6.46,
+      "high_pressure_psi": 5000,
+      "actuation_pressure_psi": 5000,
+      "closing_volume_gal": 45.0,
+      "locking_system": "PosLock",
+      "residual_pressure_update_date": "2023-01-03",
+      "residual_pressure_1st_close_psi": 3900,
+      "notes": [
+        "Fabric nao garante corte e vedacao para cabo de perfilagem/arame; pode haver possibilidade com ajuste do PosLock e teste."
+      ]
+    },
+
+    "low_blind_shear_ram_LBSR": {
+      "type": "LBSR",
+      "manufacturer": "NOV/Shaffer",
+      "bop_model": "NXT",
+      "bore_in": 18.75,
+      "class_pressure_psi": 15000,
+      "shear_model": "LFS-5",
+      "main_piston_diameter_in": 22.0,
+      "rod_diameter_in": 6.0,
+      "closing_ratio": 6.46,
+      "shearing_ratio": 13.44,
+      "high_pressure_psi": 5000,
+      "actuation_pressure_psi": 1500,
+      "closing_volume_gal": 45.0,
+      "locking_system": "PosLock with ILF",
+      "residual_pressure_update_date": "2023-01-03",
+      "residual_pressure_1st_close_psi": 3900,
+      "residual_pressure_2nd_close_1st_csr_psi": 3460,
+      "residual_pressure_2nd_close_1st_ubsr_psi": 3460
+    },
+
+    "pipe_rams": {
+      "extra": {
+        "type": "PIPE_RAM",
+        "manufacturer": "NOV/Shaffer",
+        "bop_model": "NXT",
+        "class_pressure_psi": 15000,
+        "variable_bore_range_in": [5.0, 7.0],
+        "locking_system": "Ultralock IIB",
+        "closing_ratio": 13.94,
+        "inverted": false,
+        "ram_thickness_in": 7.0,
+        "flatpack_seal_reference": "REF/Vedacao_flatpack:1:243"
+      },
+      "upr": {
+        "type": "PIPE_RAM",
+        "manufacturer": "NOV/Shaffer",
+        "bop_model": "NXT",
+        "class_pressure_psi": 15000,
+        "variable_bore_range_in": [3.5, 6.625],
+        "locking_system": "Ultralock IIB ILF",
+        "closing_ratio": 13.94,
+        "inverted": false,
+        "ram_thickness_in": 7.0,
+        "flatpack_seal_reference": "REF/Vedacao_flatpack:1:243"
+      },
+      "mpr": {
+        "type": "PIPE_RAM",
+        "manufacturer": "NOV/Shaffer",
+        "bop_model": "NXT",
+        "class_pressure_psi": 15000,
+        "variable_bore_range_in": [3.5, 6.625],
+        "locking_system": "Ultralock IIB ILF",
+        "closing_ratio": 13.94,
+        "inverted": false,
+        "ram_thickness_in": 7.0,
+        "flatpack_seal_reference": "REF/Vedacao_flatpack:1:243"
+      },
+      "lpr": {
+        "type": "PIPE_RAM",
+        "manufacturer": "NOV/Shaffer",
+        "bop_model": "NXT",
+        "class_pressure_psi": 15000,
+        "variable_bore_range_in": [5.0, 7.0],
+        "locking_system": "Ultralock IIB ILF",
+        "closing_ratio": 13.94,
+        "inverted": false,
+        "ram_thickness_in": 7.0,
+        "flatpack_seal_reference": "REF/Vedacao_flatpack:1:243"
+      }
+    }
+  },
+
+  "eds_test_reference_data": {
+    "cut_and_seal_test_examples": [
+      {
+        "date": "2022-11-27",
+        "test_name": "DP 6 5/8 50.46 lb/ft V-150 - Corte e Vedacao",
+        "location": "Superficie",
+        "eds_sequence": "CSR+BSR (UBSR)",
+        "pipe_od_in": 6.625,
+        "pipe_id_in": 4.999,
+        "pipe_weight_lbft": 50.46,
+        "steel_grade": "V-150",
+        "shear_pressure_measured_psi": 2382,
+        "shear_pressure_set_psi": 2698,
+        "shear_time_s": 19,
+        "accumulator_pressure_initial_psi": 4750,
+        "accumulator_pressure_final_psi": 3450,
+        "supply": "1_conduit",
+        "report_file": "NS-47-TC-2022-11-26-CSR-DP-6.625-50.46-V150-1º-POSITIVO.xlsm",
+        "notes": ["Tubo cortado com 4 flatpacks defasados de 90°."]
+      },
+      {
+        "date": "2022-11-26",
+        "test_name": "DP 6 5/8 50.46 lb/ft V-150 - Corte",
+        "location": "Superficie",
+        "eds_sequence": "CSR+BSR (UBSR)",
+        "pipe_od_in": 6.625,
+        "pipe_id_in": 4.999,
+        "pipe_weight_lbft": 50.46,
+        "steel_grade": "V-150",
+        "shear_pressure_measured_psi": 2592,
+        "shear_pressure_set_psi": 2908,
+        "shear_time_s": 13,
+        "accumulator_pressure_initial_psi": 4750,
+        "accumulator_pressure_final_psi": 3550,
+        "supply": "1_conduit",
+        "report_file": "NS-47-TC-2022-11-26-CSR-DP-6.625-50.46-V150-1º-POSITIVO.xlsm",
+        "notes": ["Tubo cortado com 4 flatpacks defasados de 90°."]
+      }
+    ]
+  },
+
+"accumulators": {
+  "surface_bank": {
+    "gas_precharge_psi": 3000.0,
+    "gas_volume_l": 200.0,
+    "fluid_volume_l": 200.0,
+    "polytropic_n": 1.2,
+    "notes": "Valores iniciais para MVP; calibrar usando ensaios (ex.: 4750→3450 psi)."
+  }
+},
+"valves": {
+  "directional_main": {
+    "type": "orifice",
+    "cd": 0.62,
+    "area_m2": 1.0e-4,
+    "tau_open_s": 0.15,
+    "notes": "Orificio equivalente do caminho POD→atuador (MVP). Ajustar por tempo/pressao do ensaio."
+  }
+},
+"actuators": {
+  "blind_shear_ram_actuator": {
+    "piston_area_m2": null,
+    "stroke_m": null,
+    "mass_kg": null,
+    "friction_coulomb_n": 0.0,
+    "friction_viscous_n_per_ms": 0.0,
+    "notes": "Preencher piston_area a partir do diametro 22 in (rams.*.main_piston_diameter_in). stroke/massa podem ser calibrados."
+  }
+},
+
+
+  "hydraulic_control_model_targets": {
+    "intended_minimum_circuit": [
+      "accumulator_bank",
+      "directional_valve",
+      "supply_line",
+      "actuator_cylinder"
+    ],
+    "primary_outputs": [
+      "P_accumulator_bank",
+      "P_actuator",
+      "Q_supply",
+      "x_actuator",
+      "v_actuator"
+    ],
+    "notes_missing": [
+      "Necessario completar a partir dos diagramas: HPU/FRU, POD, Stack, LMRP e sequencias EDS listados no Lebuildé.",
+      "Faltam: volumes/diâmetros/comprimentos das linhas hidráulicas de controle, tipo e parâmetros das válvulas direcionais do POD, pressões reguladas (LP/HP), volumes efetivos por função.",
+      "Quando esses diagramas estiverem disponíveis, preencher: lines.control_hydraulics e valves.pod_valves."
+    ],
+    "control_hydraulics": {
+      "accumulator_bank": {
+        "total_volume_gal": null,
+        "precharge_psi": null,
+        "quantity": null,
+        "notes": "Preencher com dados reais do manifold (ex: 8x80gal ou 12x300L)"
+      },
+      "pod_valves": [],
+      "regulators": {
+        "lp_psi": null,
+        "hp_psi": null,
+        "notes": "Tipicamente LP=1500 psi, HP=5000 psi para NXT"
+      }
+    }
+  }
+}
